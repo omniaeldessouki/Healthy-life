@@ -12,6 +12,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -44,11 +45,16 @@ export default function Home() {
       }
 
       setResult(data.data);
+      setShowPopup(true);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const closePopup = () => {
+    setShowPopup(false);
   };
 
   return (
@@ -118,22 +124,32 @@ export default function Home() {
         </div>
       )}
 
-      {result && (
-        <div className={styles.result}>
-          <h3>AI Analysis Results:</h3>
-          <p>
-            <strong>BMI:</strong> {result.bmi} ({result.bmiCategory})
-          </p>
-          <p>
-            <strong>Message:</strong> {result.message}
-          </p>
-          <div>
-            <strong>Recommendations:</strong>
-            <ul>
-              {result?.recommendations?.map((rec, index) => (
-                <li key={index}>{rec}</li>
-              ))}
-            </ul>
+      {/* Popup Modal */}
+      {showPopup && result && (
+        <div className={styles.popupOverlay} onClick={closePopup}>
+          <div className={styles.popup} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.popupHeader}>
+              <h3>AI Analysis Results</h3>
+              <button className={styles.closeButton} onClick={closePopup}>
+                ×
+              </button>
+            </div>
+            <div className={styles.popupContent}>
+              <p>
+                <strong>BMI:</strong> {result.bmi} ({result.bmiCategory})
+              </p>
+              <p>
+                <strong>Message:</strong> {result.message}
+              </p>
+              <div>
+                <strong>Recommendations:</strong>
+                <ul>
+                  {result?.recommendations?.map((rec, index) => (
+                    <li key={index}>{rec}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       )}
